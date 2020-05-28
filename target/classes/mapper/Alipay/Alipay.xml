@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.BuyDao">
+
+
+    <!--根据手机号 显示房租 以及 时间信息 距离现在还多少时间到期-->
+    <select id="findTime" parameterType="java.lang.String" resultType="map">
+        select startleasetime,endleasetime,Now() as new from user_room where userid =
+        (select id from user where phone = #{phone});
+    </select>
+
+    <!--显示信息到二维码上-->
+    <select id="findObjectByPhone" parameterType="java.lang.String" resultType="map">
+        select a.*,tb_home.hourse,tb_home.floor,tb_home.room_number,tb_home.price from user_room a,tb_home where
+        userid = (select id from user where phone =#{phone}) and homeid = tb_home.id;
+    </select>
+    <!--在当前时间基础上增加时间 -->
+    <update id="addTime">
+        update user_room set endleasetime = date_add(NOW(), interval #{num} MONTH)
+        where userid = (select id from user where phone = #{phone});
+    </update>
+
+    <!--在租借时间的基础上增加时间 -->
+    <update id="addTime1">
+        update user_room set endleasetime = date_add(endleasetime,interval #{num} MONTH)
+        where userid = (select id from user where phone = #{phone});
+    </update>
+
+
+</mapper>

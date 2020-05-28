@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.UserDao">
+
+	<!--根据用户名查询用户信息（登录操作 shiro）-->
+	<select id="findObjectByName" parameterType ="java.lang.String"
+			resultType="com.ssm.entity.User">
+		select * from user where realname = #{realname}
+	</select>
+
+	<!-- 通过sql标签定义一个语句，通过include标签引入 -->
+	<sql id="whereQuery">
+		<where>
+			user.id=userid and tb_home.id=homeid
+			<if test='realname!=null and realname!=""'>
+				and realname like concat("%",#{realname},"%")
+			</if>
+			<if test='phone!=null and phone !=""'>
+				and phone like concat("%",#{phone},"%")
+			</if>
+			and valid = 1
+		</where>
+	</sql>
+	<!-- 分页查询 -->
+	<select id="findPageObjects" resultType="map">
+		select user_room.homeid as rmid,user.id,user.realname,user.phone,tb_home.hourse,
+		tb_home.floor,tb_home.room_number,startleasetime,endleasetime
+		from user,tb_home,user_room
+		<include refid="whereQuery"></include>
+		limit #{startIndex},#{pageSize}
+	</select>
+	<select id="getRowCount" resultType="int">
+		select count(*) from user,tb_home,user_room
+		<include refid="whereQuery"></include>
+	</select>
+	<!--拉黑租客信息-->
+	<update id="blockById">
+		update user
+		set valid = 0
+		where id in
+		<foreach collection="ids"
+				 open="("
+				 item="item"
+				 separator=","
+				 close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<!--移除租客属性  变为游客-->
+	<delete id="moveById">
+		delete from user_room
+		where userid in
+		<foreach collection="ids"
+				 open="("
+				 item="item"
+				 separator=","
+				 close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<!--拉黑名单信息-->
+	<sql id="whereQuery1">
+		<where>
+			<if test='realname!=null and realname!=""'>
+				and realname like concat("%",#{realname},"%")
+			</if>
+			<if test='phone!=null and phone !=""'>
+				and phone like concat("%",#{phone},"%")
+			</if>
+			and valid = 0
+		</where>
+	</sql>
+	<select id="findBlockPageObjects" resultType="com.ssm.entity.User">
+		select * from user
+		<include refid="whereQuery1"></include>
+		limit #{startIndex},#{pageSize}
+	</select>
+	<select id="getBlockRowCount" resultType="int">
+		select count(*) from user
+		<include refid="whereQuery1"></include>
+	</select>
+	<!--恢复拉黑名单内的租客-->
+	<update id="reloadById">
+		update user
+		set valid = 1
+		where id in
+		<foreach collection="ids"
+				 open="("
+				 item="item"
+				 separator=","
+				 close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<!--添加-->
+	<!--添加前先判断该用户是否存在 不存在先添加用户-->
+	<insert id="insertUsers" parameterType="com.ssm.entity.User">
+		insert into user(realname,password,salt,phone,valid)
+		values(#{realname},#{password},#{salt},#{phone},#{valid})
+	</insert>
+	<insert id="insertObject">
+		insert into user_room (userid,homeid,startleasetime,endleasetime)
+		values ( (select id from user where realname = #{realname} and phone = #{phone}),
+		(select id from tb_home where hourse = #{hourse} and floor =#{floor} and room_number =#{room_number}),
+		#{startleasetime},#{endleasetime});
+	</insert>
+
+	<!--修改-->
+	<!--1、根据id查询-->
+	<select id="findObjectById" parameterType="java.lang.Integer" resultType="com.ssm.entity.Common">
+		select user.id as userid,tb_home.id as homeid,user.realname,user.phone,tb_home.hourse,
+		tb_home.floor,tb_home.room_number,startleasetime,endleasetime
+		from user,tb_home,user_room where user.id=userid and tb_home.id=homeid and homeid=#{id};
+	</select>
+	<!--2、保存-->
+	<update id="updateObject" parameterType="com.ssm.entity.UserRoom">
+		update user_room set startleasetime = #{startleasetime},endleasetime = #{endleasetime}
+		where userid = #{userid} and homeid = #{homeid}
+	</update>
+
+
+	<!--根据id查询个人信息 并修改-->
+	<update id="updateUserObject"
+			parameterType="com.ssm.entity.User">
+      update user
+      set
+      	realname=#{realname},
+     	phone=#{phone},
+      	password=#{password},
+      	salt=#{salt},
+      	valid=#{valid}
+      where id=#{id}
+	</update>
+	<select id="findUserObjectById" parameterType="Integer"
+			resultType="com.ssm.entity.User">
+		select * from user where id = #{id}
+	</select>
+
+
+	<!-- 通过sql标签定义一个语句，通过include标签引入 -->
+	<sql id="whereQuery2">
+		<where>
+			<if test='realname!=null and realname !=""'>
+				and realname like concat("%",#{realname},"%")
+			</if>
+			<if test='phone!=null and phone!=""'>
+				and phone like concat("%",#{phone},"%")
+			</if>
+			and realname != "游客"
+		</where>
+	</sql>
+
+	<!-- 分页查询 -->
+	<select id="findTenantPageObjects"
+			resultType="com.ssm.entity.User">
+		select * from user
+		<include refid="whereQuery2"></include>
+		limit #{startIndex},#{pageSize}
+	</select>
+	<select id="getTenantRowCount" resultType="int">
+		select count(*) from user
+		<include refid="whereQuery2"></include>
+	</select>
+
+
+	<!-- 得到用户的角色 -->
+	<select id="getRole" resultType="com.ssm.entity.Role">
+		select id,roleName,roleValue from role where id in
+		(select role_id from user_roles where user_id =(
+		select id from user where realname=#{realname} and phone =#{phone} ))
+	</select>
+	<!-- 得到用户的权限 -->
+	<select id="getPermission" parameterType="Integer" resultType="com.ssm.entity.Permission">
+		select permission from permission where id in
+		(select permission_id from role_permission where
+		role_id =#{id})
+	</select>
+
+	<insert id="saveUser">
+		insert into user (realname,password,salt,phone,valid)
+		values (#{realname},#{password},#{salt},#{phone},#{valid});
+	</insert>
+
+	<!--自动分配租客权限-->
+	<select id="findRoles" parameterType="java.lang.String" resultType="map">
+		select * from user_roles where user_id = (select id from user where realname = #{realname})
+	</select>
+	<insert id="insertUR" parameterType="java.lang.String">
+        insert into user_roles(user_id,role_id)
+        value((select id from user where realname = #{realname}),2)
+    </insert>
+</mapper>

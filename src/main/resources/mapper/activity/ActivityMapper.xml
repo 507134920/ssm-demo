@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.ActivityDao">
+
+    <!--增加活动-->
+    <insert id="insertActivity" parameterType="com.ssm.entity.Activity">
+        insert into tb_activity(time,place,content)
+        value(#{time},#{place},#{content})
+    </insert>
+
+    <!--查询本月活动-->
+    <select id="findActivity" resultType="com.ssm.entity.Activity">
+        select * from tb_activity  WHERE DATE_FORMAT(time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+    </select>
+
+    <select id="findAllActivity" parameterType="java.lang.Integer" resultType="com.ssm.entity.Activity">
+        select * from tb_activity order by time desc
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="activityNum" resultType="Integer">
+        SELECT count(*) as activityNum FROM tb_activity
+    </select>
+
+    <delete id="delById">
+        delete from tb_activity
+        where id in
+        <foreach collection="ids"
+                 open="("
+                 item="item"
+                 separator=","
+                 close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <update id="updateActivity" parameterType="com.ssm.entity.Activity">
+        update tb_activity
+        set time=#{time},content = #{content},place=#{place}
+		where id =#{id}
+    </update>
+
+    <select id="findActivityById" parameterType="java.lang.Integer" resultType="com.ssm.entity.Activity">
+        select * from tb_activity where id = #{id}
+    </select>
+
+
+</mapper>

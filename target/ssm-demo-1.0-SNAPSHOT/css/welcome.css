@@ -1,0 +1,39 @@
+.layui-table>.messageList{
+    width: 600px;
+    background: white;
+    float: left;
+}
+.messageList>.info{
+    padding: 10px 20px;
+    border-bottom: 2px solid #ccc;
+}
+.info>.infoText{
+    line-height: 25px;
+    margin-bottom: 10px;
+}
+.info>.infoOperation{
+    width: 100%;
+    overflow: hidden;
+}
+.infoOperation>.infoTime{
+    float: left;
+    font-size: 13px;
+    color: #ccc;
+}
+.infoOperation>.infoHandle{
+    float: right;
+    font-size: 13px;
+}
+.infoHandle>a{
+    text-decoration: none;
+    color: #ccc;
+    background: url("../images/icons.png") no-repeat 0 0;
+    padding-left: 25px;
+    margin-left: 10px;
+}
+.infoHandle>a:nth-child(2){
+    background-position: 0 -17px;
+}
+.infoHandle>a:nth-child(3){
+    background-position: 0 -33px;
+}

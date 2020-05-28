@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.RepairDao">
+
+    <!--增加维修信息-->
+    <insert id="insertRepair" parameterType="com.ssm.entity.Repair">
+        insert into repair(realname,ntime,content)
+        value(#{realname},#{ntime},#{content})
+    </insert>
+
+
+    <select id="findAllRepair" parameterType="java.lang.Integer" resultType="com.ssm.entity.Repair">
+        select * from repair order by ntime asc
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="repairNum" resultType="Integer">
+        SELECT count(*) as repairNum FROM repair
+    </select>
+
+    <delete id="delById" parameterType="int">
+        delete from repair
+        where id in
+        <foreach collection="ids"
+                 open="("
+                 item="item"
+                 separator=","
+                 close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.MoneyDao">
+
+    <!-- 通过sql标签定义一个语句，通过include标签引入 -->
+    <sql id="whereQuery">
+        <where>
+            a.homeid = b.id and c.userid = d.id and c.homeid = b.id
+            <if test='realname!=null and realname!=""'>
+                and d.realname like concat("%",#{realname},"%")
+            </if>
+            <if test='phone!=null and phone !=""'>
+                and d.phone like concat("%",#{phone},"%")
+            </if>
+            <if test='hourse!=null and hourse !=""'>
+                and b.hourse = #{hourse}
+            </if>
+            <if test='floor!=null and floor !=""'>
+                and b.floor = #{floor}
+            </if>
+            <if test='room_number!=null and room_number !=""'>
+                and b.room_number like concat("%",#{room_number},"%")
+            </if>
+        </where>
+    </sql>
+    <!-- 分页查询 -->
+    <select id="findPageObjects" resultType="map">
+        select a.id,d.realname,d.phone,hourse,floor,room_number,waterprice,electricprice
+        from tb_money a,tb_home b,user_room c,user d
+        <include refid="whereQuery"></include>
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getRowCount" resultType="int">
+        select count(*) from tb_money a,tb_home b,user_room c,user d
+        <include refid="whereQuery"></include>
+    </select>
+
+
+    <update id="updateMoney">
+        update tb_money set waterprice= waterprice + #{waterprice},electricprice= electricprice+#{electricprice}
+        where homeid =
+        (select id from tb_home where hourse=#{hourse} and floor=#{floor} and room_number = #{room_number});
+    </update>
+
+    <select id="doFindObjectById" parameterType="int" resultType="map">
+        select waterprice,electricprice,hourse,floor,room_number
+        from tb_money,tb_home
+        where homeid=tb_home.id
+        and tb_money.id = #{id}
+    </select>
+</mapper>

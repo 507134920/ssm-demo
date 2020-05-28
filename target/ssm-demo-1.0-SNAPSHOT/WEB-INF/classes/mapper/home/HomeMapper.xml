@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.HomeDao">
+
+
+    <select id="findPageObjects" resultType="com.ssm.entity.Home">
+        select id,hourse_pasword,room_password
+        from tb_home where id =
+        ( select homeid from user_room where userid =
+        ( select id from user where realname = #{realname} and phone = #{phone} )
+         )
+    </select>
+
+    <sql id="whereQuery">
+        <where>
+            <if test='hourse!=null and hourse !=""'>
+                and hourse = #{hourse}
+            </if>
+            <if test='floor!=null and floor !=""'>
+                and floor = #{floor}
+            </if>
+            <if test='room_number!=null and room_number !=""'>
+                and room_number like concat("%",#{room_number},"%")
+            </if>
+        </where>
+    </sql>
+    <select id="findHomeObjects" resultType="com.ssm.entity.Home">
+        select * from tb_home
+        <include refid="whereQuery"></include>
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getRowCount" resultType="int">
+        SELECT count(*) FROM tb_home
+        <include refid="whereQuery"></include>
+    </select>
+
+    <update id="updateHome" parameterType="com.ssm.entity.Home">
+        update tb_home
+        set hourse_pasword=#{hourse_pasword},room_password = #{room_password}
+		where id =#{id}
+    </update>
+
+    <select id="doFindObjectById" parameterType="java.lang.Integer" resultType="com.ssm.entity.Home">
+        select * from tb_home where id = #{id}
+    </select>
+
+
+</mapper>

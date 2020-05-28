@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.MessageDao">
+
+    <insert id="insertMessage" parameterType="com.ssm.entity.Message">
+        insert into tb_content(realname,content,committime,agree,disagree)
+        value(#{realname},#{content},NOW(),0,0)
+    </insert>
+
+    <update id="updateAgree" parameterType="java.lang.Integer">
+        update tb_content set agree= agree+1  where id=#{id}
+    </update>
+
+    <update id="updateDisAgree" parameterType="java.lang.Integer">
+        update tb_content set disagree= disagree+1 where id=#{id}
+    </update>
+
+    <delete id="delMessage" parameterType="java.lang.Integer">
+        delete from tb_content
+        where id = #{id}
+    </delete>
+
+    <select id="findMessage" resultType="com.ssm.entity.Message">
+        select * from tb_content  WHERE DATE_FORMAT(committime, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+    </select>
+
+</mapper>

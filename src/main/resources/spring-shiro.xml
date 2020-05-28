@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!-- shiro工厂bean配置 -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!-- shiro的核心安全接口 -->
+        <property name="securityManager" ref="securityManager"/>
+        <!-- 要求登录时的连接 -->
+        <property name="loginUrl" value="/loginUI.do"/>
+        <!-- 登录成功后要跳转的连接(此处已经在登录中处理了) -->
+        <!-- <property name="successUrl" value="/toIndex.do"></property> -->
+        <!-- 访问未对其授权的资源时,要跳转的连接 -->
+        <property name="unauthorizedUrl" value="/toErrorUI.do"/>
+        <!-- shiro连接约束配置 -->
+        <property name="filterChainDefinitions">
+            <value>
+                <!-- 对静态资源设置允许匿名访问 -->
+                /bootstrap/** = anon
+                /css/** = anon
+                /fonts/** = anon
+                /js/** = anon
+                /images/** = anon
+                /hourseimg/** = anon
+                /jquery/** = anon
+                /layui/** = anon
+                /library/** = anon
+                /static/** = anon
+                <!-- 可匿名访问路径，例如：验证码、登录连接、退出连接等 -->
+                /login.do = anon
+                /error = anon
+                <!-- 退出 -->
+                /logout.do = logout  <!-- 会调用Subject的logout方法,此方法会将session清空 -->
+
+                <!-- 设置 ->用户的查询 需要查询的权限 -->
+                <!--/book/book_addUI.do = perms[query:all]-->
+                <!-- 剩余其他路径，必须认证通过才可以访问 -->
+                /** = authc
+            </value>
+        </property>
+    </bean>
+    <!-- 配置shiro安全管理器 -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="shiroUserRealm"/>
+    </bean>
+
+    <!-- 自定义Realm -->
+    <bean id="shiroUserRealm" class="com.ssm.shiro.ShiroUserRealm">
+        <!-- 配置凭证算法匹配器 -->
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="MD5"/>
+                <!-- <property name="hashIterations" value="1024"/> -->
+            </bean>
+        </property>
+    </bean>
+    <!--Shiro生命周期处理器-->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <!-- 开启Shiro的注解(如@RequiresRoles,@RequiresPermissions),需借助SpringAOP扫描使用Shiro注解的类,并在必要时进行安全逻辑验证 -->
+    <!-- 配置以下两个bean即可实现此功能 -->
+    <!-- 开启shiro注解功能 -->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor" />
+
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+</beans>

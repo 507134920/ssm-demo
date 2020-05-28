@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.HourseDao">
+
+    <!--查询未租 房间信息-->
+    <select id="findNoRent" resultType="com.ssm.entity.Home">
+        select * from tb_home where id not in
+        (select homeid from user_room where userid
+        in(select id from user))
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getNoRentRowCount" resultType="int">
+        SELECT count(*) from tb_home where id not in
+        (select homeid from user_room where userid
+        in(select id from user))
+    </select>
+
+    <!--查询已租 房间信息-->
+    <select id="findRentAlready" resultType="com.ssm.entity.Home">
+        select * from tb_home where id in
+        (select homeid from user_room where userid
+        in(select id from user))
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getRentAlreadyRowCount" resultType="int">
+        SELECT count(*) from tb_home where id not in
+        (select homeid from user_room where userid
+        in(select id from user))
+    </select>
+
+    <!--查询所有房间信息-->
+    <select id="findAllObject" resultType="com.ssm.entity.Home">
+        select * from tb_home
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getAllRowCount" resultType="int">
+        SELECT count(*) from tb_home
+    </select>
+
+    <select id="findPicById" parameterType="java.lang.Integer" resultType="com.ssm.entity.HoursePic">
+        select * from hoursepic where homeid =
+        ( select id from tb_home where id =#{id})
+    </select>
+    <!--查询所有房间图片信息-->
+    <select id="findAllPic">
+        select * from hoursepic;
+    </select>
+</mapper>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HN旅游-搜索</title>
+    <link rel="stylesheet" type="text/css" href="../css/font.css">
+    <link rel="stylesheet" type="text/css" href="../css/xadmin.css">
+    <script src="../jquery/jquery-3.2.1.min.js"></script>
+    <script src="../layui/layui.js" charset="utf-8"></script>
+    <script src="../js/xadmin.js"></script>
+    <script src="../myhome/common/page.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            $("#queryFormId").on("click","#btn-search",doQueryObjects);
+        });
+
+        //查询按钮
+        function doQueryObjects() {
+            //1.修改当前页的值为1
+            $("#pageId").data("pageCurrent",1);
+            //2.执行查询动作(重用doGetObjects方法)
+            doGetObjects();
+        }
+        //获取房间信息
+        function doGetObjects(){
+        debugger
+            var url = "toPic.do";
+            //根据pageId绑定的值 动态确定当前页
+            var pageCurrent=$("#pageId").data("pageCurrent");
+            if(!pageCurrent)pageCurrent=1;
+            var id=$("#id").val();
+            var params={"id":id};
+            alert("开始");
+            $.getJSON(url,params,function(result){
+                console.log(result);
+                if(result.state==1){
+                    console.log(result);
+                    //将数据显示在table的tbody中
+                    setTableBodyRows(result.data);
+                }else{
+                    alert(result.message);
+                }
+            });
+        }
+
+        //将数据填充到table的body中
+        function setTableBodyRows(result) {
+        debugger
+            var route_lis = "";
+            //2、迭代数据集result
+            for (var i = 0; i < result.length; i++) {
+                //获取{rid:1,rname:"xxx"}
+
+                var li = '<li>\n' +
+                    '                        <div class="img"><img src="../'+result[i].pic+'" style="width: 299px;"></div>\n' +
+                    '                    </li>';
+                route_lis += li;
+            }
+            $("#route").html(route_lis);
+            //定位到页面顶部
+            window.scrollTo(0,0);
+        }
+
+    </script>
+</head>
+<body class="layui-anim layui-anim-up">
+
+    <div class="x-nav">
+              <span class="layui-breadcrumb">
+                <a href="#">首页</a>
+                <a href="#">演示</a>
+                <a>
+                  <cite>导航元素</cite></a>
+              </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so" id="queryFormId">
+            <label for="id" class="layui-form-label">
+                <span class="x-red">*</span>编号
+            </label>
+            <div class="layui-input-inline">
+                <input type="text" placeholder="请输入要查询的房间编号" name="id" id="id">
+            </div>
+            <button type="button" class="layui-btn" id="btn-search" value="查询"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+    </div>
+    <div>
+        <ul id="route">
+            <!--此处添加房源信息-->
+        </ul>
+    </div>
+</body>
+</html>
