@@ -18,4 +18,6 @@ public interface HourseService {
 
     List<HoursePic> findPicById(Integer id);
     List<HoursePic> findAllPic();
+
+    Map<String, Object> findPic2(float startNum, float endNum, int pageCurrent);
 }

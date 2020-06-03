@@ -196,6 +196,12 @@
                             <cite>详细房源信息</cite>
                         </a>
                     </li >
+                    <li>
+                        <a _href="hourse/toNewPicUI.do">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>详细房源信息2</cite>
+                        </a>
+                    </li>
                 </ul>
             </li>
         </ul>

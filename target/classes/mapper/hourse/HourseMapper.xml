@@ -43,6 +43,20 @@
     </select>
     <!--查询所有房间图片信息-->
     <select id="findAllPic">
-        select * from hoursepic;
+        select * from hoursepic
+    </select>
+
+    <select id="findPic2" resultType="map">
+        select tb_home.id,tb_home.price,pic
+        from hoursepic,tb_home
+        where hoursepic.homeid = tb_home.id
+        and price between #{startNum} and #{endNum}
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="findPic2RowCount" resultType="int">
+        select count(*)
+        from hoursepic,tb_home
+        where hoursepic.homeid = tb_home.id
+        and price between #{startNum} and #{endNum}
     </select>
 </mapper>

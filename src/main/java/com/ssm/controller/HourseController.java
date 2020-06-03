@@ -92,5 +92,22 @@ public class HourseController {
         return new JsonResult(Allpic);
     }
 
+    /**
+     * 房间详细信息界面
+     */
+    @RequestMapping("toNewPicUI.do")
+    public String toNewPicUI(){
+        return "redirect:pic.html";
+    }
+
+    /**
+     * 按条件分页查询房间信息
+     */
+    @RequestMapping("/findAllPic2.do")
+    //@RequiresPermissions(value={"read:query"},logical=Logical.OR)
+    @ResponseBody
+    public JsonResult findAllPic2(){
+        return new JsonResult();
+    }
 
 }

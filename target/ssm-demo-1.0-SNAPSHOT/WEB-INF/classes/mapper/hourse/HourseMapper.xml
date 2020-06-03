@@ -43,6 +43,32 @@
     </select>
     <!--查询所有房间图片信息-->
     <select id="findAllPic">
-        select * from hoursepic;
+        select * from hoursepic
+    </select>
+
+    <sql id="whereQuery">
+        <where>
+            hoursepic.homeid = tb_home.id
+            <if test='hourse!=null'>
+                and hourse = #{hourse}
+            </if>
+            <if test='floor!=null'>
+                and floor=#{floor}
+            </if>
+            <if test='room_number!=null and room_number!=""'>
+                and room_number=#{room_number}
+            </if>
+        </where>
+    </sql>
+    <select id="findPic2" resultType="map">
+        select hourse,floor,room_number,pic
+        from hoursepic,tb_home
+        <include refid="whereQuery"/>
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="findPic2RowCount" resultType="int">
+        select count(*)
+        from hoursepic,tb_home
+        <include refid="whereQuery"/>
     </select>
 </mapper>

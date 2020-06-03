@@ -91,4 +91,25 @@ public class HourseServiceImpl implements HourseService {
     public List<HoursePic> findAllPic() {
         return hourseDao.findAllPic();
     }
+
+    @Override
+    public Map<String, Object> findPic2(float startNum, float endNum,int pageCurrent) {
+        int pageSize=4;
+        int startIndex = (pageCurrent-1)*pageSize;
+        //获取当页数据
+        List<Map<String, Object>> list = hourseDao.findPic2(startNum, endNum, startIndex, pageSize);
+        //获取总记录数并封装分页信息
+        int rowCount = hourseDao.findPic2RowCount(startNum, endNum);
+        PageObject pageObject = new PageObject();
+        pageObject.setRowCount(rowCount);
+        pageObject.setPageSize(pageSize);
+        pageObject.setStartIndex(startIndex);
+        pageObject.setPageCurrent(pageCurrent);
+
+        //将当前页数据以及分页信息分装到map
+        Map<String,Object> map = new HashMap<>();
+        map.put("list", list);
+        map.put("pageObject",pageObject);
+        return map;
+    }
 }

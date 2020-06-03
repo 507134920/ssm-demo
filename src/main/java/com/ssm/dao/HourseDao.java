@@ -5,6 +5,7 @@ import com.ssm.entity.HoursePic;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface HourseDao {
 
@@ -28,4 +29,11 @@ public interface HourseDao {
 
     List<HoursePic> findPicById(@Param("id") Integer id);
     List<HoursePic> findAllPic();
+    List<Map<String,Object>> findPic2(@Param("startNum") float startNum,
+                                      @Param("endNum") float endNum,
+                                      @Param("startIndex") int startIndex,
+                                      @Param("pageSize") int pageSize);
+    int findPic2RowCount(@Param("startNum") float startNum,
+                         @Param("endNum") float endNum);
+
 }
