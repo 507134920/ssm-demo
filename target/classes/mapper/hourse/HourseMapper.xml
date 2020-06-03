@@ -46,8 +46,20 @@
         select * from hoursepic
     </select>
 
+    <select id="findPic1" resultType="map">
+        select tb_home.id,tb_home.price,pic,hourse,floor,room_number
+        from hoursepic,tb_home
+        where hoursepic.homeid = tb_home.id
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="findPic1RowCount" resultType="int">
+        select count(*)
+        from hoursepic,tb_home
+        where hoursepic.homeid = tb_home.id
+    </select>
+
     <select id="findPic2" resultType="map">
-        select tb_home.id,tb_home.price,pic
+        select tb_home.id,tb_home.price,pic,hourse,floor,room_number
         from hoursepic,tb_home
         where hoursepic.homeid = tb_home.id
         and price between #{startNum} and #{endNum}

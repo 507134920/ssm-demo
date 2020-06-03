@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/hourse")
 public class HourseController {
+    private Logger log =
+            Logger.getLogger(HourseController.class.getSimpleName());
     @Autowired
     private HourseService hourseService;
 
@@ -104,10 +107,10 @@ public class HourseController {
      * 按条件分页查询房间信息
      */
     @RequestMapping("/findAllPic2.do")
-    //@RequiresPermissions(value={"read:query"},logical=Logical.OR)
     @ResponseBody
-    public JsonResult findAllPic2(){
-        return new JsonResult();
+    public JsonResult findAllPic2(float startNum,float endNum,Integer pageCurrent){
+        log.info("开始"+startNum+"结束"+endNum);
+        return new JsonResult(hourseService.findPic2(startNum, endNum, pageCurrent));
     }
 
 }

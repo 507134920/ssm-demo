@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util-4.3.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+
+    <!-- 读取配置文件的内容 -->
+    <context:property-placeholder location="classpath:jedis.properties"/>
+
+    <!-- 配置jpc JedisPoolConfig , 用来合理预估配置-->
+    <bean id="jpc" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="${maxTotal}"/>
+        <property name="maxIdle" value="${maxIdle}"/>
+    </bean>
+
+    <!-- 配置jcf , 链接工厂 , 用来生成redis链接对象  JedisConnectionFactory-->
+    <bean id="jcf" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="${host}"/>
+        <property name="port" value="${port}"/>
+        <!--<property name="password" value="${redis.pass}"/>-->
+        <property name="poolConfig" ref="jpc"/>
+    </bean>
+
+    <!--  RedisTemplate 对象来进行对redis的各种操作  -->
+    <bean  id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="jcf"/>
+
+        <!-- 设置编码格式为UTF-8 -->
+        <property name="keySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+    </bean>
+</beans>

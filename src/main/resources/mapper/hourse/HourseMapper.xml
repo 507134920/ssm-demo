@@ -47,7 +47,7 @@
     </select>
 
     <select id="findPic2" resultType="map">
-        select tb_home.id,tb_home.price,pic
+        select tb_home.id,tb_home.price,pic,hourse,floor,room_number
         from hoursepic,tb_home
         where hoursepic.homeid = tb_home.id
         and price between #{startNum} and #{endNum}
