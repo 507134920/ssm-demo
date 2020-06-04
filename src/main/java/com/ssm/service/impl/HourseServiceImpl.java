@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class HourseServiceImpl implements HourseService {
@@ -124,7 +125,7 @@ public class HourseServiceImpl implements HourseService {
                         //缓存为空，查询一遍数据库
                         userList = hourseDao.findPic2(startNum, endNum, startIndex, pageSize);
                         //把数据库查询出来的数据，放入redis中
-                        redisTemplate.opsForValue().set("userList", userList);
+                        redisTemplate.opsForValue().set("userList", userList,300,TimeUnit.SECONDS);
                     }
                 }
             }
